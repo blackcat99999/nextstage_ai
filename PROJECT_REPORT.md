@@ -13,7 +13,7 @@
 | Field | Details |
 | :--- | :--- |
 | **Project Title** | NetSage AI: AI-Assisted Network Troubleshooting Helper with Human Review |
-| **Submitted By** | Anjali Kumari [Roll No.: 2305599] |
+| **Submitted By** | Nikita Pandit [Roll No.: 23051842] |
 | **Department** | Department of Computer Science and Engineering |
 | **Institution** | KIIT Deemed to be University, Bhubaneswar, Odisha, India |
 | **Internship Track** | Cisco-AICTE Virtual Internship Program (Modern AI Domain) |
