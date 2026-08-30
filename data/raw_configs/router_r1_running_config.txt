@@ -1,0 +1,41 @@
+! R1 Running Configuration - Branch Gateway
+version 15.4
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R1
+!
+ip dhcp pool LAN_VLAN10
+ network 192.168.10.0 255.255.255.0
+ dns-server 8.8.8.8
+ domain-name enterprise.local
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+!
+interface GigabitEthernet0/0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+!
+interface GigabitEthernet0/0/0.30
+ ip address 192.168.30.1 255.255.255.0
+!
+router ospf 1
+ router-id 1.1.1.1
+ passive-interface GigabitEthernet0/1
+ network 10.1.1.0 0.0.0.3 area 0
+!
+ip access-list extended 101
+ permit icmp 192.168.10.0 0.0.0.255 192.168.20.0 0.0.0.255
+!
+line con 0
+line vty 0 4
+ login
+!
+end

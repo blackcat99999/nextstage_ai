@@ -1,0 +1,1299 @@
+[
+  {
+    "case_id": "CASE-01",
+    "domain": "VLAN",
+    "symptom": "PC-Sales-1 in Engineering wing cannot reach Accounting Server at 192.168.10.100. Local gateway ping fails.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-01",
+      "root_cause": "Interface FastEthernet0/5 is improperly assigned to VLAN 20 (Guest) instead of VLAN 10 (Sales).",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "Negotiation of Trunking: Off"
+      ],
+      "next_commands": [
+        "show vlan brief",
+        "show interfaces trunk"
+      ],
+      "recommended_fix": [
+        "SW-Floor1# configure terminal",
+        "SW-Floor1(config)# interface FastEthernet0/5",
+        "SW-Floor1(config-if)# switchport mode access",
+        "SW-Floor1(config-if)# switchport access vlan 10",
+        "SW-Floor1(config-if)# no shutdown",
+        "SW-Floor1(config-if)# end",
+        "SW-Floor1# copy running-config startup-config"
+      ],
+      "explanation": "Diagnosis identified Access Port VLAN Assignment failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 661
+  },
+  {
+    "case_id": "CASE-02",
+    "domain": "VLAN",
+    "symptom": "CDP native VLAN mismatch warnings flooding console; inter-switch management traffic is dropping packets.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-05-NATIVE-VLAN-MISMATCH",
+        "rule_name": "802.1Q Native VLAN Mismatch",
+        "severity": "Critical",
+        "matched_text": "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/1 (99), with SW-Dist1 GigabitEthernet0/1 (1)",
+        "description": "Native VLAN mismatch: Local GigabitEthernet0/1 is on Native VLAN 99, but remote SW-Dist1 GigabitEthernet0/1 is on Native VLAN 1.",
+        "suggested_action": "Configure matching native VLANs: 'switchport trunk native vlan 99' on SW-Dist1."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-02",
+      "root_cause": "Native VLAN mismatch on 802.1Q trunk link Gi0/1: SW-Core1 is configured with Native VLAN 99, while SW-Dist1 is on default Native VLAN 1.",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/1 (99), with SW-Dist1 GigabitEthernet0/1 (1)."
+      ],
+      "next_commands": [
+        "show vlan brief",
+        "show interfaces trunk"
+      ],
+      "recommended_fix": [
+        "SW-Dist1# configure terminal",
+        "SW-Dist1(config)# interface GigabitEthernet0/1",
+        "SW-Dist1(config-if)# switchport trunk native vlan 99",
+        "SW-Dist1(config-if)# end",
+        "SW-Dist1# copy running-config startup-config"
+      ],
+      "explanation": "Diagnosis identified Native VLAN Mismatch failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 705
+  },
+  {
+    "case_id": "CASE-03",
+    "domain": "VLAN",
+    "symptom": "VLAN 20 and VLAN 30 hosts on Access Switch SW-2 cannot communicate with Default Gateway located on Core Switch SW-1.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-04-TRUNK-NOT-OPERATIONAL",
+        "rule_name": "Trunk Link Inactive / Static Access Mode",
+        "severity": "High",
+        "matched_text": "Administrative Mode: dynamic auto\nOperational Mode: static access",
+        "description": "Inter-switch link failed to negotiate 802.1Q trunking and fell back to static access mode.",
+        "suggested_action": "Hardcode trunk mode: 'switchport mode trunk' and 'switchport trunk allowed vlan ...'"
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-03",
+      "root_cause": "Uplink interface GigabitEthernet0/1 on SW-2 is operating in static access mode because DTP failed or administrative mode was not hardcoded to trunk.",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "Name: Gi0/1"
+      ],
+      "next_commands": [
+        "show vlan brief",
+        "show interfaces trunk"
+      ],
+      "recommended_fix": [
+        "SW-2# configure terminal",
+        "SW-2(config)# interface GigabitEthernet0/1",
+        "SW-2(config-if)# switchport trunk encapsulation dot1q",
+        "SW-2(config-if)# switchport mode trunk",
+        "SW-2(config-if)# switchport trunk allowed vlan 10,20,30,99",
+        "SW-2(config-if)# no shutdown",
+        "SW-2(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified Missing Trunk Mode Configuration failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 676
+  },
+  {
+    "case_id": "CASE-04",
+    "domain": "VLAN",
+    "symptom": "Hosts in VLAN 30 (192.168.30.0/24) cannot reach default gateway 192.168.30.1 on Router R1. VLAN 10 and 20 work fine.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-03-IFACE-PROTOCOL-DOWN",
+        "rule_name": "Interface Protocol Down (Layer 2 / Encapsulation Fault)",
+        "severity": "High",
+        "matched_text": "GigabitEthernet0/0/0.30 Status: up, Protocol: down",
+        "description": "Interface GigabitEthernet0/0/0.30 is physically up but Line Protocol is down. Indicates Layer 2 framing, dot1Q missing encapsulation, or keepalive failure.",
+        "suggested_action": "Verify 802.1Q encapsulation ('encapsulation dot1Q <vlan>') or clock rate/framing on GigabitEthernet0/0/0.30."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-04",
+      "root_cause": "Sub-interface GigabitEthernet0/0/0.30 is missing IEEE 802.1Q encapsulation ('encapsulation dot1Q 30'), leaving the protocol status down.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "GigabitEthernet0/0/0.30 192.168.30.1   YES manual up                    down"
+      ],
+      "next_commands": [
+        "show vlan brief",
+        "show interfaces trunk"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# interface GigabitEthernet0/0/0.30",
+        "R1(config-subif)# encapsulation dot1Q 30",
+        "R1(config-subif)# ip address 192.168.30.1 255.255.255.0",
+        "R1(config-subif)# no shutdown",
+        "R1(config-subif)# end"
+      ],
+      "explanation": "Diagnosis identified Router-on-a-Stick Dot1Q Encapsulation failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 673
+  },
+  {
+    "case_id": "CASE-05",
+    "domain": "VLAN",
+    "symptom": "Users connected to switch ports configured for VLAN 40 (Voice) get no link layer connectivity and traffic is blackholed.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-04-VLAN-MISSING-DB",
+        "rule_name": "Assigned VLAN Not in Database",
+        "severity": "High",
+        "matched_text": "Port assigned to VLAN 40, but VLAN 40 absent from 'show vlan brief'",
+        "description": "Switch ports are assigned to VLAN 40, but VLAN 40 has not been created in the switch VLAN database.",
+        "suggested_action": "Create VLAN in global config: 'vlan 40' -> 'name <name>' -> 'state active'."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-05",
+      "root_cause": "VLAN 40 has not been created in the local switch VLAN database, causing all ports assigned to VLAN 40 to remain inactive.",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "switchport access vlan 40",
+        "(VLAN 40 is missing from the VLAN database)"
+      ],
+      "next_commands": [
+        "show vlan brief",
+        "show interfaces trunk"
+      ],
+      "recommended_fix": [
+        "SW-Floor2# configure terminal",
+        "SW-Floor2(config)# vlan 40",
+        "SW-Floor2(config-vlan)# name Voice",
+        "SW-Floor2(config-vlan)# state active",
+        "SW-Floor2(config-vlan)# end"
+      ],
+      "explanation": "Diagnosis identified Missing VLAN in Database failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 661
+  },
+  {
+    "case_id": "CASE-06",
+    "domain": "DHCP",
+    "symptom": "Clients in VLAN 20 receive APIPA addresses (169.254.x.x) and cannot lease an IP address from centralized DHCP Server at 192.168.10.50.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-02-GW-MISSING",
+        "rule_name": "Missing Default Gateway",
+        "severity": "High",
+        "matched_text": "Default Gateway: 0.0.0.0",
+        "description": "Host has IP 192.168.20.1 but no default gateway (0.0.0.0) configured. Cannot reach remote subnets.",
+        "suggested_action": "Configure valid default gateway on host or add 'default-router' option to DHCP pool."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-06",
+      "root_cause": "Router sub-interface Gi0/0.20 lacks the 'ip helper-address 192.168.10.50' configuration required to relay DHCP broadcast requests to the DHCP server.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "Default Gateway . . . . . . . . . : 0.0.0.0"
+      ],
+      "next_commands": [
+        "show ip dhcp binding",
+        "show ip dhcp pool"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# interface GigabitEthernet0/0.20",
+        "R1(config-subif)# ip helper-address 192.168.10.50",
+        "R1(config-subif)# end"
+      ],
+      "explanation": "Diagnosis identified Missing IP Helper Address failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 696
+  },
+  {
+    "case_id": "CASE-07",
+    "domain": "DHCP",
+    "symptom": "New branch office workstations cannot obtain DHCP leases. Existing workstations retain current leases.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-07",
+      "root_cause": "DHCP excluded address range is overly broad (192.168.50.1 to 192.168.50.250), leaving only 4 usable IP addresses in the pool.",
+      "osi_layer": "Layer 7",
+      "confidence": "High",
+      "evidence": [
+        "R-Branch# show ip dhcp pool",
+        "Pool POOL_BRANCH :",
+        "Utilization mark (high/low)    : 100 / 0"
+      ],
+      "next_commands": [
+        "show ip dhcp binding",
+        "show ip dhcp pool"
+      ],
+      "recommended_fix": [
+        "R-Branch# configure terminal",
+        "R-Branch(config)# no ip dhcp excluded-address 192.168.50.1 192.168.50.250",
+        "R-Branch(config)# ip dhcp excluded-address 192.168.50.1 192.168.50.20",
+        "R-Branch(config)# end"
+      ],
+      "explanation": "Diagnosis identified DHCP Pool Scope Exclusion & Exhaustion failure at Layer 7. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 625
+  },
+  {
+    "case_id": "CASE-08",
+    "domain": "Gateway",
+    "symptom": "Static workstation PC-HQ can ping local peers on 192.168.1.0/24 but fails to reach any external server or internet IP.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-02-GW-TYPO",
+        "rule_name": "Default Gateway Typo Detected",
+        "severity": "High",
+        "matched_text": "Host Gateway: 192.168.1.254 vs Router Interface IP: 192.168.1.1",
+        "description": "Host is configured with gateway 192.168.1.254, but router gateway on this segment is 192.168.1.1.",
+        "suggested_action": "Update host default gateway to 192.168.1.1."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-08",
+      "root_cause": "Workstation default gateway is misconfigured as 192.168.1.254 instead of the actual router gateway IP 192.168.1.1.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "FastEthernet0 Connection:"
+      ],
+      "next_commands": [
+        "show gateway status",
+        "show ip gateway"
+      ],
+      "recommended_fix": [
+        "PC-HQ> ipconfig /setgateway 192.168.1.1",
+        "(Or in Packet Tracer GUI: Desktop -> IP Configuration -> Default Gateway: 192.168.1.1)"
+      ],
+      "explanation": "Diagnosis identified Default Gateway Typo failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 612
+  },
+  {
+    "case_id": "CASE-09",
+    "domain": "DHCP",
+    "symptom": "DHCP clients in VLAN 10 acquire valid IP address and subnet mask, but cannot access destinations outside their local subnet.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-02-GW-MISSING",
+        "rule_name": "Missing Default Gateway",
+        "severity": "High",
+        "matched_text": "Default Gateway: 0.0.0.0",
+        "description": "Host has IP 192.168.10.25 but no default gateway (0.0.0.0) configured. Cannot reach remote subnets.",
+        "suggested_action": "Configure valid default gateway on host or add 'default-router' option to DHCP pool."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-09",
+      "root_cause": "DHCP pool 'LAN_VLAN10' is missing the 'default-router 192.168.10.1' configuration parameter, causing clients to have no default gateway.",
+      "osi_layer": "Layer 7",
+      "confidence": "High",
+      "evidence": [
+        "R1# show running-config | section ip dhcp pool",
+        "ip dhcp pool LAN_VLAN10",
+        "Default Gateway.................: 0.0.0.0"
+      ],
+      "next_commands": [
+        "show ip dhcp binding",
+        "show ip dhcp pool"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# ip dhcp pool LAN_VLAN10",
+        "R1(config-dhcp)# default-router 192.168.10.1",
+        "R1(config-dhcp)# end"
+      ],
+      "explanation": "Diagnosis identified Missing Default-Router Option failure at Layer 7. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 626
+  },
+  {
+    "case_id": "CASE-10",
+    "domain": "Gateway",
+    "symptom": "Intermittent gateway reachability and ARP flapping observed across all workstations in the Finance department.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-01-DUP-IP",
+        "rule_name": "Duplicate IP Address Conflict",
+        "severity": "Critical",
+        "matched_text": "%IP-4-DUPADDR: Duplicate address 192.168.100.1 on GigabitEthernet0/1",
+        "description": "Duplicate IP address 192.168.100.1 detected on interface GigabitEthernet0/1. ARP flapping occurs when two hosts claim the same IP.",
+        "suggested_action": "Inspect switch MAC address table for conflicting MAC and reassign unique IP on rogue device."
+      },
+      {
+        "rule_id": "RULE-01-DUP-IP-ARP",
+        "rule_name": "ARP Table Multi-MAC Conflict",
+        "severity": "Critical",
+        "matched_text": "IP 192.168.100.1 mapped to MACs: 0000.0c07.ac01, 0001.9654.abcd",
+        "description": "IP 192.168.100.1 is claimed by multiple distinct MAC addresses (0000.0c07.ac01, 0001.9654.abcd).",
+        "suggested_action": "Isolate conflicting host port and clear ARP cache."
+      }
+    ],
+    "rule_count": 2,
+    "ai_diagnosis": {
+      "case_id": "CASE-10",
+      "root_cause": "IP address conflict: A rogue host with MAC 0001.9654.abcd has been statically assigned 192.168.100.1, conflicting with the default router gateway.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "%IP-4-DUPADDR: Duplicate address 192.168.100.1 on GigabitEthernet0/1, sourced by 0001.9654.abcd"
+      ],
+      "next_commands": [
+        "show gateway status",
+        "show ip gateway"
+      ],
+      "recommended_fix": [
+        "1. Identify port for MAC 0001.9654.abcd on switch: 'show mac address-table address 0001.9654.abcd'",
+        "2. Reconfigure or change host IP on rogue endpoint to an unused IP (e.g., 192.168.100.250).",
+        "3. Clear ARP cache on router: 'clear arp-cache'"
+      ],
+      "explanation": "Diagnosis identified Duplicate IP / Gateway Conflict failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 665
+  },
+  {
+    "case_id": "CASE-11",
+    "domain": "Routing",
+    "symptom": "Branch router R-BR1 cannot route remote branch traffic to HQ subnet 10.0.0.0/8. Pings drop with 'Destination host unreachable'.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-05-INVALID-STATIC-NEXTHOP",
+        "rule_name": "Invalid Static Route Next-Hop Subnet",
+        "severity": "High",
+        "matched_text": "ip route 10.0.0.0 255.0.0.0 172.16.1.6 on link with 172.16.1.1",
+        "description": "Static route next-hop 172.16.1.6 does not reside in the connected /30 point-to-point interface subnet of 172.16.1.1.",
+        "suggested_action": "Change static route next-hop to the neighbor interface IP on the same /30 subnet."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-11",
+      "root_cause": "Static route points to 172.16.1.6, which is an invalid next-hop outside the /30 point-to-point subnet (172.16.1.0/30 allows only .1 and .2).",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "S    10.0.0.0/8 [1/0] via 172.16.1.6",
+        "ip route 10.0.0.0 255.0.0.0 172.16.1.6"
+      ],
+      "next_commands": [
+        "show ip route",
+        "show ip ospf neighbor"
+      ],
+      "recommended_fix": [
+        "R-BR1# configure terminal",
+        "R-BR1(config)# no ip route 10.0.0.0 255.0.0.0 172.16.1.6",
+        "R-BR1(config)# ip route 10.0.0.0 255.0.0.0 172.16.1.2",
+        "R-BR1(config)# end"
+      ],
+      "explanation": "Diagnosis identified Invalid Static Route Next-Hop failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 644
+  },
+  {
+    "case_id": "CASE-12",
+    "domain": "Routing",
+    "symptom": "OSPF adjacency fails to form between Core Router R1 and Distribution Router R2 across GigabitEthernet0/1.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-07-OSPF-PASSIVE-MISCONFIG",
+        "rule_name": "OSPF Passive Interface on Adjacency Link",
+        "severity": "Critical",
+        "matched_text": "passive-interface GigabitEthernet0/1 / No Hellos (Passive interface)",
+        "description": "Interface GigabitEthernet0/1 is configured as passive in OSPF, suppressing Hello packets and preventing neighbor adjacency.",
+        "suggested_action": "Under 'router ospf <pid>', execute 'no passive-interface GigabitEthernet0/1'."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-12",
+      "root_cause": "GigabitEthernet0/1 on R1 is mistakenly configured as a passive interface ('passive-interface GigabitEthernet0/1'), preventing OSPF Hello packet exchange.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "No Hellos (Passive interface)",
+        "passive-interface GigabitEthernet0/1"
+      ],
+      "next_commands": [
+        "show ip route",
+        "show ip ospf neighbor"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# router ospf 1",
+        "R1(config-router)# no passive-interface GigabitEthernet0/1",
+        "R1(config-router)# end"
+      ],
+      "explanation": "Diagnosis identified OSPF Passive Interface Misconfiguration failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 661
+  },
+  {
+    "case_id": "CASE-13",
+    "domain": "Routing",
+    "symptom": "OSPF adjacency stuck in INIT/DOWN state between Router R1 and Router R2 on link 192.168.12.0/30.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-07-OSPF-AREA-MISMATCH",
+        "rule_name": "OSPF Neighbor Area ID Mismatch",
+        "severity": "High",
+        "matched_text": "%OSPF-4-ERRRCV: Received packet with invalid area ID 0.0.0.1 from 192.168.12.2 on GigabitEthernet0/0 area 0.0.0.0",
+        "description": "OSPF Area mismatch: Received Hello with Area 0.0.0.1 on interface configured for Area 0.0.0.0.",
+        "suggested_action": "Align OSPF network area definitions so both neighboring interfaces share the same Area ID."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-13",
+      "root_cause": "OSPF Area ID mismatch on connecting link: R1 interface is in Area 0 while R2 interface is in Area 1.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "%OSPF-4-ERRRCV: Received packet with invalid area ID 0.0.0.1 from 192.168.12.2 on GigabitEthernet0/0 area 0.0.0.0"
+      ],
+      "next_commands": [
+        "show ip route",
+        "show ip ospf neighbor"
+      ],
+      "recommended_fix": [
+        "R2# configure terminal",
+        "R2(config)# router ospf 1",
+        "R2(config-router)# no network 192.168.12.0 0.0.0.3 area 1",
+        "R2(config-router)# network 192.168.12.0 0.0.0.3 area 0",
+        "R2(config-router)# end"
+      ],
+      "explanation": "Diagnosis identified OSPF Area Mismatch failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 657
+  },
+  {
+    "case_id": "CASE-14",
+    "domain": "Routing",
+    "symptom": "Subnet 172.16.20.0/24 on Router R1 is not being advertised to OSPF neighbors.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-07-OSPF-WILDCARD-ERROR",
+        "rule_name": "OSPF Wildcard Mask Inversion Error",
+        "severity": "Medium",
+        "matched_text": "network 172.16.20.0 255.255.255.0 area",
+        "description": "Subnet mask format '255.255.255.0' used in OSPF network command instead of inverted wildcard mask.",
+        "suggested_action": "Use inverted wildcard mask (e.g. replace 255.255.255.0 with 0.0.0.255)."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-14",
+      "root_cause": "Subnet mask '255.255.255.0' was entered instead of inverted wildcard mask '0.0.0.255' in the OSPF network statement, so Gi0/2 was never enabled for OSPF.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "network 10.0.0.0 0.0.0.3 area 0"
+      ],
+      "next_commands": [
+        "show ip route",
+        "show ip ospf neighbor"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# router ospf 10",
+        "R1(config-router)# no network 172.16.20.0 255.255.255.0 area 0",
+        "R1(config-router)# network 172.16.20.0 0.0.0.255 area 0",
+        "R1(config-router)# end"
+      ],
+      "explanation": "Diagnosis identified OSPF Wildcard Mask Error failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 646
+  },
+  {
+    "case_id": "CASE-15",
+    "domain": "Routing",
+    "symptom": "Clients in Branch Subnet 192.168.70.0/24 can send packets to HQ Server 10.10.10.50, but receive no reply.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-15",
+      "root_cause": "HQ-Core router lacks a return route for the branch subnet 192.168.70.0/24, causing return packets to be dropped.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks"
+      ],
+      "next_commands": [
+        "show ip route",
+        "show ip ospf neighbor"
+      ],
+      "recommended_fix": [
+        "HQ-Core# configure terminal",
+        "HQ-Core(config)# ip route 192.168.70.0 255.255.255.0 172.16.0.2",
+        "HQ-Core(config)# end"
+      ],
+      "explanation": "Diagnosis identified Missing Return Route / Asymmetric Routing failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 639
+  },
+  {
+    "case_id": "CASE-16",
+    "domain": "ACL",
+    "symptom": "Engineering workstations in 192.168.10.0/24 cannot browse Web Server at 192.168.20.80. ICMP ping works.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-16",
+      "root_cause": "ACL 101 permits only ICMP traffic; HTTP (TCP port 80) and HTTPS (TCP port 443) traffic is blocked by the implicit 'deny ip any any' at the end of the ACL.",
+      "osi_layer": "Layer 4",
+      "confidence": "High",
+      "evidence": [
+        "(Implicit deny ip any any active at end)"
+      ],
+      "next_commands": [
+        "show access-lists",
+        "show ip interface"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# ip access-list extended 101",
+        "R1(config-ext-nacl)# 20 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.80 eq 80",
+        "R1(config-ext-nacl)# 30 permit tcp 192.168.10.0 0.0.0.255 host 192.168.20.80 eq 443",
+        "R1(config-ext-nacl)# end"
+      ],
+      "explanation": "Diagnosis identified Implicit Deny All Blocking HTTP failure at Layer 4. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 613
+  },
+  {
+    "case_id": "CASE-17",
+    "domain": "ACL",
+    "symptom": "ACL intended to protect Internal DB from external network is blocking internal DB requests instead.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-17",
+      "root_cause": "Access list FILTER_EXT_IN was applied as 'in' on internal interface Gi0/0 instead of 'in' on external WAN interface Gi0/1.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "10 deny ip host 203.0.113.50 10.0.0.0 0.0.0.255"
+      ],
+      "next_commands": [
+        "show access-lists",
+        "show ip interface"
+      ],
+      "recommended_fix": [
+        "R-Edge# configure terminal",
+        "R-Edge(config)# interface GigabitEthernet0/0",
+        "R-Edge(config-if)# no ip access-group FILTER_EXT_IN in",
+        "R-Edge(config)# interface GigabitEthernet0/1",
+        "R-Edge(config-if)# ip access-group FILTER_EXT_IN in",
+        "R-Edge(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified ACL Direction Misapplication (In vs Out) failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 613
+  },
+  {
+    "case_id": "CASE-18",
+    "domain": "ACL",
+    "symptom": "Clients cannot connect to Web Server port 80 through perimeter firewall router.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-18",
+      "root_cause": "Port specification 'eq 80' was applied to the source port (client random ephemeral port) instead of the destination port.",
+      "osi_layer": "Layer 4",
+      "confidence": "High",
+      "evidence": [
+        "Extended IP access list 105"
+      ],
+      "next_commands": [
+        "show access-lists",
+        "show ip interface"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# ip access-list extended 105",
+        "R1(config-ext-nacl)# no 10",
+        "R1(config-ext-nacl)# 10 permit tcp 192.168.1.0 0.0.0.255 host 172.16.1.10 eq 80",
+        "R1(config-ext-nacl)# end"
+      ],
+      "explanation": "Diagnosis identified ACL Port Matching Reversal (Source vs Destination) failure at Layer 4. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 582
+  },
+  {
+    "case_id": "CASE-19",
+    "domain": "ACL",
+    "symptom": "Standard ACL designed to block Host A from accessing Server B inadvertently blocked Host A from accessing the entire enterprise network.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-19",
+      "root_cause": "Standard ACL 10 was placed at the source ingress interface Gi0/0, blocking Host A from all destinations instead of placing an Extended ACL close to the destination.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "10 deny 192.168.1.50"
+      ],
+      "next_commands": [
+        "show access-lists",
+        "show ip interface"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# interface GigabitEthernet0/0",
+        "R1(config-if)# no ip access-group 10 in",
+        "R1(config)# ip access-list extended 110",
+        "R1(config-ext-nacl)# deny ip host 192.168.1.50 host 10.0.0.100",
+        "R1(config-ext-nacl)# permit ip any any",
+        "R1(config)# interface GigabitEthernet0/1",
+        "R1(config-if)# ip access-group 110 out",
+        "R1(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified Standard ACL Placement Flaw failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 622
+  },
+  {
+    "case_id": "CASE-20",
+    "domain": "ACL",
+    "symptom": "Large packets drop silently and network engineers cannot perform diagnostic ping/traceroute across WAN link.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-20",
+      "root_cause": "Rule 30 explicitly denies all ICMP traffic, preventing echo-reply and ICMP Type 3 Code 4 (Fragmentation Needed) packets.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "30 deny icmp any any (1450 matches)"
+      ],
+      "next_commands": [
+        "show access-lists",
+        "show ip interface"
+      ],
+      "recommended_fix": [
+        "R-WAN1# configure terminal",
+        "R-WAN1(config)# ip access-list extended 150",
+        "R-WAN1(config-ext-nacl)# no 30",
+        "R-WAN1(config-ext-nacl)# 30 permit icmp any any unreachable",
+        "R-WAN1(config-ext-nacl)# 35 permit icmp any any echo-reply",
+        "R-WAN1(config-ext-nacl)# 36 permit icmp any any time-exceeded",
+        "R-WAN1(config-ext-nacl)# end"
+      ],
+      "explanation": "Diagnosis identified ACL Blocking ICMP Diagnostic & PMTU failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 599
+  },
+  {
+    "case_id": "CASE-21",
+    "domain": "NAT",
+    "symptom": "Internal clients on LAN cannot access internet hosts; `show ip nat translations` is completely empty.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-21",
+      "root_cause": "Interface GigabitEthernet0/0 (LAN) is missing the 'ip nat inside' configuration directive.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "! (Missing ip nat inside)"
+      ],
+      "next_commands": [
+        "show ip nat translations",
+        "show ip nat statistics"
+      ],
+      "recommended_fix": [
+        "R-Edge# configure terminal",
+        "R-Edge(config)# interface GigabitEthernet0/0",
+        "R-Edge(config-if)# ip nat inside",
+        "R-Edge(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified Missing IP NAT Inside Directive failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 614
+  },
+  {
+    "case_id": "CASE-22",
+    "domain": "NAT",
+    "symptom": "LAN clients have 'ip nat inside' on internal interface, but packets are routed out to ISP with un-translated private IPs.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-22",
+      "root_cause": "Interface Serial0/0/0 (WAN) is missing the 'ip nat outside' configuration statement.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "! (Missing ip nat outside)"
+      ],
+      "next_commands": [
+        "show ip nat translations",
+        "show ip nat statistics"
+      ],
+      "recommended_fix": [
+        "R-Edge# configure terminal",
+        "R-Edge(config)# interface Serial0/0/0",
+        "R-Edge(config-if)# ip nat outside",
+        "R-Edge(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified Missing IP NAT Outside Directive failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 605
+  },
+  {
+    "case_id": "CASE-23",
+    "domain": "NAT",
+    "symptom": "Only the first single host that accesses the internet works; all subsequent client connections fail completely.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-06-NAT-MISSING-OUTSIDE",
+        "rule_name": "NAT Missing Outside Interface Directive",
+        "severity": "Critical",
+        "matched_text": "ip nat inside present; missing 'ip nat outside' on WAN interface",
+        "description": "NAT configuration is active and 'ip nat inside' is present, but no WAN interface has 'ip nat outside'.",
+        "suggested_action": "Apply 'ip nat outside' to the WAN/ISP facing interface."
+      },
+      {
+        "rule_id": "RULE-06-PAT-MISSING-OVERLOAD",
+        "rule_name": "PAT Missing Overload Keyword",
+        "severity": "High",
+        "matched_text": "ip nat inside source list 1 interface GigabitEthernet0/0/1",
+        "description": "NAT source statement lacks the 'overload' keyword, restricting translation to only 1 single simultaneous client.",
+        "suggested_action": "Re-enter command with 'overload' appended: 'ip nat inside source list ... overload'."
+      }
+    ],
+    "rule_count": 2,
+    "ai_diagnosis": {
+      "case_id": "CASE-23",
+      "root_cause": "The NAT statement is configured as 1-to-1 dynamic NAT without the 'overload' keyword, exhausting the single public IP after one host.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "ip nat inside source list 1 interface GigabitEthernet0/0/1"
+      ],
+      "next_commands": [
+        "show ip nat translations",
+        "show ip nat statistics"
+      ],
+      "recommended_fix": [
+        "R-Gateway# configure terminal",
+        "R-Gateway(config)# no ip nat inside source list 1 interface GigabitEthernet0/0/1",
+        "R-Gateway(config)# ip nat inside source list 1 interface GigabitEthernet0/0/1 overload",
+        "R-Gateway(config)# end"
+      ],
+      "explanation": "Diagnosis identified Missing PAT Overload Keyword failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 656
+  },
+  {
+    "case_id": "CASE-24",
+    "domain": "NAT",
+    "symptom": "Users in newly added VLAN 30 (192.168.30.0/24) cannot reach the internet, while VLAN 10 and 20 browse normally.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-06-NAT-MISSING-OUTSIDE",
+        "rule_name": "NAT Missing Outside Interface Directive",
+        "severity": "Critical",
+        "matched_text": "ip nat inside present; missing 'ip nat outside' on WAN interface",
+        "description": "NAT configuration is active and 'ip nat inside' is present, but no WAN interface has 'ip nat outside'.",
+        "suggested_action": "Apply 'ip nat outside' to the WAN/ISP facing interface."
+      },
+      {
+        "rule_id": "RULE-06-PAT-MISSING-OVERLOAD",
+        "rule_name": "PAT Missing Overload Keyword",
+        "severity": "High",
+        "matched_text": "ip nat inside source list 1 interface GigabitEthernet0/1",
+        "description": "NAT source statement lacks the 'overload' keyword, restricting translation to only 1 single simultaneous client.",
+        "suggested_action": "Re-enter command with 'overload' appended: 'ip nat inside source list ... overload'."
+      }
+    ],
+    "rule_count": 2,
+    "ai_diagnosis": {
+      "case_id": "CASE-24",
+      "root_cause": "Standard ACL 1 referenced by NAT does not permit subnet 192.168.30.0/24, preventing NAT translation for VLAN 30.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "Standard IP access list 1"
+      ],
+      "next_commands": [
+        "show ip nat translations",
+        "show ip nat statistics"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# access-list 1 permit 192.168.30.0 0.0.0.255",
+        "R1(config)# end"
+      ],
+      "explanation": "Diagnosis identified NAT Source ACL Subnet Exclusion failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 673
+  },
+  {
+    "case_id": "CASE-25",
+    "domain": "NAT",
+    "symptom": "External internet clients attempting to reach internal Web Server at public IP 203.0.113.10 port 80 are redirected to SSH port 22.",
+    "rule_findings": [
+      {
+        "rule_id": "RULE-06-NAT-MISSING-OUTSIDE",
+        "rule_name": "NAT Missing Outside Interface Directive",
+        "severity": "Critical",
+        "matched_text": "ip nat inside present; missing 'ip nat outside' on WAN interface",
+        "description": "NAT configuration is active and 'ip nat inside' is present, but no WAN interface has 'ip nat outside'.",
+        "suggested_action": "Apply 'ip nat outside' to the WAN/ISP facing interface."
+      }
+    ],
+    "rule_count": 1,
+    "ai_diagnosis": {
+      "case_id": "CASE-25",
+      "root_cause": "Static NAT statement maps external port 80 to internal port 22 (SSH) instead of port 80 (HTTP).",
+      "osi_layer": "Layer 4",
+      "confidence": "High",
+      "evidence": [
+        "ip nat inside source static tcp 192.168.5.10 22 203.0.113.10 80 extendable"
+      ],
+      "next_commands": [
+        "show ip nat translations",
+        "show ip nat statistics"
+      ],
+      "recommended_fix": [
+        "R1# configure terminal",
+        "R1(config)# no ip nat inside source static tcp 192.168.5.10 22 203.0.113.10 80",
+        "R1(config)# ip nat inside source static tcp 192.168.5.10 80 203.0.113.10 80 extendable",
+        "R1(config)# end"
+      ],
+      "explanation": "Diagnosis identified Static NAT Port Translation Conflict failure at Layer 4. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 95,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 644
+  },
+  {
+    "case_id": "CASE-26",
+    "domain": "Wireless",
+    "symptom": "Wireless laptop associates to 'Corporate-WiFi' SSID but cannot obtain an IP address or reach corporate intranet.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-26",
+      "root_cause": "Switch port Fa0/12 connected to the AP is configured as access mode on VLAN 1 instead of a trunk port allowing VLAN 50.",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "Name: Fa0/12"
+      ],
+      "next_commands": [
+        "show wireless status",
+        "show ip wireless"
+      ],
+      "recommended_fix": [
+        "SW-Access# configure terminal",
+        "SW-Access(config)# interface FastEthernet0/12",
+        "SW-Access(config-if)# switchport mode trunk",
+        "SW-Access(config-if)# switchport trunk allowed vlan 1,50,99",
+        "SW-Access(config-if)# end"
+      ],
+      "explanation": "Diagnosis identified Wireless Access Point SSID VLAN Mismatch failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 624
+  },
+  {
+    "case_id": "CASE-27",
+    "domain": "Wireless",
+    "symptom": "Mobile devices cannot associate with Wireless Router 'Branch-WAP'; client logs indicate 4-Way Handshake Failure.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-27",
+      "root_cause": "Client configuration has an incorrect Pre-Shared Key ('CiscoSecure2025') mismatching the AP key ('CiscoSecure2026!').",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "Client-Log> 802.1X/WPA 4-Way Handshake: Failed (MIC mismatch / Key incorrect)"
+      ],
+      "next_commands": [
+        "show wireless status",
+        "show ip wireless"
+      ],
+      "recommended_fix": [
+        "Update client wireless profile with correct Pre-Shared Key: 'CiscoSecure2026!'."
+      ],
+      "explanation": "Diagnosis identified WPA2 Pre-Shared Key Mismatch failure at Layer 2. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.0,
+    "estimated_tokens": 609
+  },
+  {
+    "case_id": "CASE-28",
+    "domain": "DNS",
+    "symptom": "Users can ping external IP 8.8.8.8 successfully but cannot browse 'www.cisco.com' or any domain name.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-28",
+      "root_cause": "Client DNS server address is configured as loopback IP 127.0.0.1 instead of the active enterprise DNS server 192.168.1.10.",
+      "osi_layer": "Layer 7",
+      "confidence": "High",
+      "evidence": [
+        "*** Can't find server address for '127.0.0.1': No response from server",
+        "DNS Servers.....................: 127.0.0.1"
+      ],
+      "next_commands": [
+        "nslookup",
+        "show services"
+      ],
+      "recommended_fix": [
+        "PC-Finance> ipconfig /setdns 192.168.1.10",
+        "(Or in Packet Tracer GUI: Desktop -> IP Configuration -> DNS Server: 192.168.1.10)"
+      ],
+      "explanation": "Diagnosis identified Invalid Client DNS Server Assignment failure at Layer 7. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 598
+  },
+  {
+    "case_id": "CASE-29",
+    "domain": "DNS",
+    "symptom": "All enterprise workstations report 'DNS Server not responding' when resolving local domain records.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-29",
+      "root_cause": "The DNS Server daemon on Server-01 is turned OFF in Packet Tracer service configuration.",
+      "osi_layer": "Layer 7",
+      "confidence": "High",
+      "evidence": [
+        "DHCP              OFF",
+        "DNS               OFF",
+        "EMAIL             OFF"
+      ],
+      "next_commands": [
+        "nslookup",
+        "show services"
+      ],
+      "recommended_fix": [
+        "On Server-01 in Cisco Packet Tracer:",
+        "1. Open Server-01 -> Services Tab -> DNS.",
+        "2. Toggle DNS Service Radio Button from 'OFF' to 'ON'.",
+        "3. Verify record 'intranet.company.local' points to 192.168.10.50."
+      ],
+      "explanation": "Diagnosis identified DNS Service Stopped on Server failure at Layer 7. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 600
+  },
+  {
+    "case_id": "CASE-30",
+    "domain": "Wireless",
+    "symptom": "Security audit alert: Unauthenticated guest Wi-Fi users in VLAN 90 can ping and access internal financial servers in 10.10.0.0/16.",
+    "rule_findings": [],
+    "rule_count": 0,
+    "ai_diagnosis": {
+      "case_id": "CASE-30",
+      "root_cause": "Missing guest isolation ACL on sub-interface Gi0/0.90, allowing unrestricted inter-VLAN routing between Guest Wi-Fi and Corporate internal servers.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "Pinging 10.10.1.100 with 32 bytes of data:"
+      ],
+      "next_commands": [
+        "show wireless status",
+        "show ip wireless"
+      ],
+      "recommended_fix": [
+        "R-Core# configure terminal",
+        "R-Core(config)# ip access-list extended GUEST_ISOLATION",
+        "R-Core(config-ext-nacl)# deny ip 192.168.90.0 0.0.0.255 10.10.0.0 0.0.255.255",
+        "R-Core(config-ext-nacl)# permit ip 192.168.90.0 0.0.0.255 any",
+        "R-Core(config)# interface GigabitEthernet0/0.90",
+        "R-Core(config-subif)# ip access-group GUEST_ISOLATION in",
+        "R-Core(config-subif)# end"
+      ],
+      "explanation": "Diagnosis identified Guest Wireless Isolation Failure failure at Layer 3. Remediation restores standard Cisco IOS operation."
+    },
+    "lint_results": {
+      "is_valid": true,
+      "is_safe": true,
+      "quality_score": 100,
+      "warnings": [],
+      "errors": []
+    },
+    "overall_confidence_score": 80,
+    "latency_seconds": 0.001,
+    "estimated_tokens": 622
+  }
+]

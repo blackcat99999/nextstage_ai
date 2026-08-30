@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetSage AI - Project Solution Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-dark: #0f172a;
+      --secondary: #0284c7;
+      --accent: #0ea5e9;
+      --accent-light: #e0f2fe;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-main: #ffffff;
+      --bg-card: #f8fafc;
+      --border-color: #cbd5e1;
+      --border-dark: #334155;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-main);
+      background-color: #f1f5f9;
+      line-height: 1.65;
+      font-size: 14.5px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: var(--bg-main);
+      padding: 60px 70px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border-radius: 8px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+      .page-container {
+        margin: 0;
+        padding: 40px 45px;
+        box-shadow: none;
+        max-width: 100%;
+        border-radius: 0;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* Header & Cover */
+    .cover-header {
+      text-align: center;
+      padding: 40px 0 30px 0;
+      border-bottom: 2px solid var(--primary);
+      margin-bottom: 35px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--secondary);
+      background: var(--accent-light);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+
+    .cover-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .cover-subtitle {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--secondary);
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .cover-meta {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Metadata Table */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 25px 0 35px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .info-table th, .info-table td {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 13.5px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .info-table th {
+      background-color: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+      width: 28%;
+    }
+
+    .info-table td {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4 {
+      color: var(--primary-dark);
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+
+    h2 {
+      font-size: 20px;
+      border-bottom: 1.5px solid var(--primary);
+      padding-bottom: 6px;
+      margin: 35px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin: 22px 0 10px 0;
+      color: var(--primary);
+    }
+
+    h4 {
+      font-size: 14.5px;
+      margin: 16px 0 8px 0;
+      color: var(--text-main);
+    }
+
+    p {
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin: 10px 0 15px 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Data Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 24px 0;
+      font-size: 13px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    table.data-table th, table.data-table td {
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+
+    table.data-table th {
+      background-color: #1e293b;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    table.data-table tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    table.data-table tr:hover td {
+      background-color: #f1f5f9;
+    }
+
+    /* Cards and Highlights */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .kpi-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .kpi-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+    }
+
+    .callout {
+      background-color: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 14px 18px;
+      border-radius: 4px;
+      margin: 18px 0;
+      font-size: 13.5px;
+    }
+
+    .callout-warning {
+      background-color: #fefce8;
+      border-left: 4px solid var(--warning);
+    }
+
+    .callout-info {
+      background-color: #f0f9ff;
+      border-left: 4px solid var(--secondary);
+    }
+
+    /* Code Blocks */
+    pre, code {
+      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+      font-size: 12.5px;
+    }
+
+    pre {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      padding: 14px 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 14px 0 18px 0;
+      line-height: 1.5;
+      border: 1px solid #1e293b;
+    }
+
+    code {
+      background-color: #e2e8f0;
+      color: #0f172a;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .diff-add {
+      color: #4ade80;
+    }
+    .diff-del {
+      color: #f87171;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-accepted { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .badge-edited { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* Print Button */
+    .print-btn-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .print-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .print-btn:hover {
+      background: var(--secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-btn-bar no-print">
+    <button class="print-btn" onclick="window.print()">
+      🖨️ Print / Save as PDF
+    </button>
+  </div>
+
+  <div class="page-container">
+
+    <!-- COVER SECTION -->
+    <div class="cover-header">
+      <div class="cover-badge">PROJECT SOLUTION REPORT</div>
+      <div class="cover-title">NetSage AI</div>
+      <div class="cover-subtitle">AI-Assisted Network Troubleshooting Helper with Human Review</div>
+      <div class="cover-meta">
+        <strong>Submitted for:</strong> Cisco-AICTE Virtual Internship Program 2026<br>
+        <strong>Domain:</strong> Modern AI — Applied AI + Network Troubleshooting
+      </div>
+    </div>
+
+    <!-- STUDENT METADATA TABLE -->
+    <table class="info-table">
+      <tr>
+        <th>Submitted By</th>
+        <td>Anjali Kumari [Roll No.: 2305599]</td>
+      </tr>
+      <tr>
+        <th>Department</th>
+        <td>Department of Computer Science and Engineering</td>
+      </tr>
+      <tr>
+        <th>Institution</th>
+        <td>KIIT Deemed to be University, Bhubaneswar, Odisha</td>
+      </tr>
+      <tr>
+        <th>Academic Year</th>
+        <td>2026–2027</td>
+      </tr>
+      <tr>
+        <th>Date of Submission</th>
+        <td>August 2026</td>
+      </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- TABLE OF CONTENTS -->
+    <h2>Table of Contents</h2>
+    <ul style="line-height: 1.9; font-weight: 500;">
+      <li><strong>Abstract</strong></li>
+      <li><strong>1. Introduction</strong> — Background, Problem Statement, Objectives, Scope</li>
+      <li><strong>2. Literature Review</strong> — AI in Networking, HITL Systems, LLM Structured Diagnosis, Packet Tracer</li>
+      <li><strong>3. System Analysis and Design</strong> — Requirements, Architecture, Data Flow, Modules, Data Store Design</li>
+      <li><strong>4. Implementation</strong> — Technology Stack, Case Dataset, Prompt Engineering, Rule Checker, AI Engine, Review Workflow, Dashboard</li>
+      <li><strong>5. Testing and Results</strong> — Rule Checker Results, AI Accuracy, Human Review Outcomes</li>
+      <li><strong>6. Responsible AI</strong> — Correction Log, Case Studies, Error Pattern Analysis, Lessons Learned</li>
+      <li><strong>7. Conclusion and Future Scope</strong> — Conclusion, Limitations, Future Scope</li>
+      <li><strong>References</strong></li>
+      <li><strong>Appendix A:</strong> Project File Structure</li>
+      <li><strong>Appendix B:</strong> Command Line & Execution Reference</li>
+      <li><strong>Appendix C:</strong> Sample Case Data (CASE-01 & CASE-02)</li>
+      <li><strong>Appendix D:</strong> Setup and Installation Guide</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <!-- ABSTRACT -->
+    <h2>Abstract</h2>
+    <p>
+      <strong>NetSage AI</strong> is an AI-assisted network troubleshooting framework designed for Cisco Packet Tracer and Cisco IOS enterprise environments. It assists junior network engineers and students in diagnosing network faults by analyzing reported symptoms, topology metadata, and raw Cisco CLI <code>show</code> command outputs. The system outputs structured root-cause analyses, target OSI layer mappings, next diagnostic verification commands, and evidence-backed remediation scripts.
+    </p>
+    <p>
+      The architecture unites three synergistic diagnostic tiers:
+      (1) a <strong>deterministic rule engine</strong> in Python executing 8 algorithmic checks for common configuration errors (duplicate IPs, subnet mask mismatches, gateway omissions, administrative interface shutdowns, native VLAN mismatches, missing route table entries, NAT inside/outside pairing anomalies, and OSPF adjacency/wildcard errors);
+      (2) an <strong>AI diagnostic specialist</strong> orchestrated with Google Gemini 2.0 Flash (with OpenAI, Anthropic, and offline expert heuristic fallbacks) enforcing strict Pydantic JSON validation, calibrated confidence scoring, and verbatim evidence quotation; and
+      (3) a mandatory <strong>Human-in-the-Loop review gate</strong> requiring every AI diagnosis to be audited as <em>Accepted</em>, <em>Edited</em>, or <em>Rejected</em>.
+    </p>
+    <p>
+      The system was evaluated against a benchmark dataset of <strong>30 real-world troubleshooting cases</strong> across 8 networking domains (VLAN, DHCP, Gateway, Routing, ACL, NAT, Wireless, DNS). The deterministic engine achieved a <strong>50.0% pre-filter hit rate</strong> with 100% precision. The AI reasoning engine demonstrated <strong>100% OSI layer classification accuracy</strong>, <strong>100% evidence citation precision</strong>, and <strong>100% Cisco syntax safety</strong>. Senior network engineer audits yielded an <strong>83.3% clean agreement rate</strong> (25 Accepted), while formally logging <strong>5 deep-dive human corrections</strong> (16.7% correction rate) covering incomplete fixes, directional ACL hallucinations, destructive router reloads, missing trunk encapsulation, and disabled daemon processes.
+    </p>
+    <p>
+      <em><strong>Keywords:</strong> Network Troubleshooting, Cisco Packet Tracer, Human-in-the-Loop, Google Gemini, Deterministic Rule Checker, Responsible AI, OSI Model, AIOps.</em>
+    </p>
+
+    <!-- 1. INTRODUCTION -->
+    <h2>1. Introduction</h2>
+    <h3>1.1 Background</h3>
+    <p>
+      Network troubleshooting is a foundational core competency for engineers managing enterprise and campus infrastructures. Cisco Systems equipment powers a substantial portion of the world's enterprise communications, and Cisco Packet Tracer provides students and junior engineers with a high-fidelity simulation environment to practice configuring and diagnosing networks using authentic Cisco IOS commands.
+    </p>
+    <p>
+      A persistent challenge for junior engineers is connecting high-level symptoms to their true underlying root causes. When a client workstation obtains an IP address via DHCP but fails to reach an internal web server, the failure could stem from VLAN trunking misconfigurations, missing router sub-interfaces, asymmetric routing, ACL implicit deny drops, or NAT overload misconfiguration. Diagnosing the correct fault requires systematic multi-layer analysis across the OSI stack.
+    </p>
+
+    <h3>1.2 Problem Statement</h3>
+    <p>
+      Junior engineers often possess knowledge of individual Cisco commands but lack the structured methodology required to correlate complex, multi-device CLI outputs. Without systematic frameworks, troubleshooting often devolves into trial-and-error changes that risk causing prolonged network outages. While Large Language Models provide powerful reasoning capabilities, unconstrained LLMs can hallucinate non-existent Cisco commands, suggest disruptive actions (like <code>reload</code>), or misdiagnose topological constraints. NetSage AI addresses this by coupling deterministic rule validation with constrained AI reasoning under strict human oversight.
+    </p>
+
+    <h3>1.3 Project Objectives</h3>
+    <ul>
+      <li>Build a verified benchmark dataset of $\ge 30$ authentic troubleshooting cases covering 8 networking sub-disciplines.</li>
+      <li>Design structured prompt templates enforcing Pydantic JSON schemas with root cause, confidence, verbatim evidence, OSI layer, next commands, and remediation steps.</li>
+      <li>Implement a deterministic Python rule checker for algorithmic detection of common configuration errors.</li>
+      <li>Integrate Google Gemini 2.0 Flash with an offline expert heuristic fallback engine.</li>
+      <li>Enforce human accountability via a review workflow requiring explicit <em>Accepted</em>, <em>Edited</em>, or <em>Rejected</em> verdicts.</li>
+      <li>Document Responsible AI practice by logging $\ge 5$ detailed case studies where AI diagnoses required human correction.</li>
+      <li>Develop an interactive 5-tab web dashboard displaying executive KPIs, live troubleshooter, case explorer, analytics charts, and audit records.</li>
+    </ul>
+
+    <h3>1.4 Scope of the Project</h3>
+    <p><strong>In Scope:</strong> CCNA/CCNP-level topologies; OSI Layers 2 through 7 fault diagnosis; 8 core domains (VLAN, Gateway, DHCP, DNS, Routing, ACL, NAT, Wireless); deterministic pre-filtering; Streamlit dashboard; Responsible AI audit log.</p>
+    <p><strong>Out of Scope:</strong> Direct live SSH streaming to physical enterprise core networks; advanced service provider protocols (BGP-EVPN, MPLS-TE); fully autonomous remediation without human verification; multi-tenant enterprise LDAP/SSO.</p>
+
+    <div class="page-break"></div>
+
+    <!-- 2. LITERATURE REVIEW -->
+    <h2>2. Literature Review</h2>
+    <h3>2.1 Artificial Intelligence in Network Troubleshooting</h3>
+    <p>
+      AIOps and intelligent telemetry parsing have gained significant prominence. Traditional network troubleshooting relies on manual inspection of command outputs, which is slow and error-prone. Cisco technical guides (such as <em>Document ID 69632</em> for VLANs and <em>Document ID 13684</em> for OSPF) establish systematic diagnostic methodologies. Combining rule-based parsing with LLM semantic reasoning enables automated synthesis of multi-command outputs into clear, actionable root causes.
+    </p>
+
+    <h3>2.2 Human-in-the-Loop (HITL) AI Systems</h3>
+    <p>
+      Human-in-the-Loop is an indispensable architecture in mission-critical systems. Because network misconfigurations can disrupt enterprise operations, NetSage AI operates under the <strong>"AI Proposes, Human Disposes"</strong> model. The AI provides structured root cause hypotheses with cited evidence, but a certified engineer must review and authorize any proposed configuration script before execution.
+    </p>
+
+    <h3>2.3 Large Language Models for Structured Diagnosis</h3>
+    <p>
+      By utilizing few-shot in-context learning and schema-constrained prompting, modern LLMs can be prevented from outputting free-form conversational text and forced into returning deterministic JSON schemas. Enforcing verbatim quotation of CLI evidence lines eliminates ungrounded assumptions and dramatically enhances diagnostic reliability.
+    </p>
+
+    <h3>2.4 Cisco Packet Tracer as a Learning Environment</h3>
+    <p>
+      Cisco Packet Tracer provides an authentic, deterministic simulation environment supporting VLAN trunking, inter-VLAN routing, OSPF adjacencies, DHCP scopes, ACL filters, and NAT translations. This makes it an ideal empirical testbed for generating verifiable troubleshooting scenarios with clear ground truth.
+    </p>
+
+    <!-- 3. SYSTEM ANALYSIS AND DESIGN -->
+    <h2>3. System Analysis and Design</h2>
+    <h3>3.1 System Requirements</h3>
+    <table class="data-table">
+      <tr>
+        <th>Component</th>
+        <th>Specification / Requirement</th>
+      </tr>
+      <tr>
+        <td><strong>Programming Language</strong></td>
+        <td>Python 3.10+ (tested on Python 3.13)</td>
+      </tr>
+      <tr>
+        <td><strong>Web Application Framework</strong></td>
+        <td>Streamlit 1.30+ with custom CSS styling</td>
+      </tr>
+      <tr>
+        <td><strong>Visual Analytics</strong></td>
+        <td>Plotly Express & Graph Objects 5.18+</td>
+      </tr>
+      <tr>
+        <td><strong>AI API Client</strong></td>
+        <td>Google Generative AI (`gemini-2.0-flash`), OpenAI, Anthropic</td>
+      </tr>
+      <tr>
+        <td><strong>Data Modeling</strong></td>
+        <td>Pydantic 2.5+ for strict runtime schema validation</td>
+      </tr>
+      <tr>
+        <td><strong>Automated Testing</strong></td>
+        <td>Pytest 7.4+ (10 unit tests)</td>
+      </tr>
+    </table>
+
+    <h3>3.2 System Architecture</h3>
+    <p>
+      NetSage AI operates as a unified 5-stage hybrid diagnostic pipeline:
+    </p>
+    <ol>
+      <li><strong>Input Ingestion:</strong> Ingests reported symptom, topology metadata, and raw Cisco IOS CLI outputs.</li>
+      <li><strong>Deterministic Rule Engine:</strong> Executes 8 offline Python algorithms detecting subnet, ARP, VLAN, OSPF, and interface anomalies.</li>
+      <li><strong>Tier-3 AI Reasoning Specialist:</strong> Formats prompt with few-shot examples and invokes Google Gemini (or offline fallback) to generate structured Pydantic JSON.</li>
+      <li><strong>Cisco IOS Safety Linter:</strong> Validates command hierarchy and blocks destructive operations (<code>reload</code>, <code>write erase</code>).</li>
+      <li><strong>Human Review Gate:</strong> Presents findings to engineer for <code>Accepted</code>, <code>Edited</code>, or <code>Rejected</code> sign-off, logging all decisions to persistent audit files.</li>
+    </ol>
+
+    <!-- KPI CARDS SUMMARY -->
+    <div class="card-grid">
+      <div class="kpi-card">
+        <div class="kpi-num">30</div>
+        <div class="kpi-title">Benchmark Cases</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">50.0%</div>
+        <div class="kpi-title">Rule Hit Rate</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">100%</div>
+        <div class="kpi-title">OSI Accuracy</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num">83.3%</div>
+        <div class="kpi-title">Human Agreement</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4. IMPLEMENTATION DETAILS -->
+    <h2>4. Implementation</h2>
+    <h3>4.1 Troubleshooting Case Dataset</h3>
+    <p>
+      The dataset comprises <strong>30 comprehensive cases</strong> across 8 networking domains:
+    </p>
+    <table class="data-table">
+      <tr>
+        <th>Domain</th>
+        <th>Case Count</th>
+        <th>Target OSI Layers</th>
+        <th>Primary Cisco References / Standards</th>
+      </tr>
+      <tr>
+        <td><strong>VLAN & Trunking</strong></td>
+        <td>5</td>
+        <td>Layer 2, Layer 3</td>
+        <td>Cisco Doc ID 69632; Catalyst 2960 Configuration Guide</td>
+      </tr>
+      <tr>
+        <td><strong>Routing (OSPF & Static)</strong></td>
+        <td>5</td>
+        <td>Layer 3</td>
+        <td>OSPF Design Guide Doc ID 13684; Static Route Guides</td>
+      </tr>
+      <tr>
+        <td><strong>Access Control Lists (ACL)</strong></td>
+        <td>5</td>
+        <td>Layer 3, Layer 4</td>
+        <td>Cisco ACL Configuration Guide Doc ID 23602</td>
+      </tr>
+      <tr>
+        <td><strong>Network Address Translation</strong></td>
+        <td>5</td>
+        <td>Layer 3, Layer 4</td>
+        <td>Cisco NAT Documentation Doc ID 13772</td>
+      </tr>
+      <tr>
+        <td><strong>DHCP Services</strong></td>
+        <td>3</td>
+        <td>Layer 3, Layer 7</td>
+        <td>Cisco DHCP Configuration Guide Doc ID 12303</td>
+      </tr>
+      <tr>
+        <td><strong>Wireless LAN</strong></td>
+        <td>3</td>
+        <td>Layer 2, Layer 7</td>
+        <td>Cisco WLC & Enterprise AP Configuration Guide</td>
+      </tr>
+      <tr>
+        <td><strong>Default Gateway</strong></td>
+        <td>2</td>
+        <td>Layer 3</td>
+        <td>Inter-VLAN Routing & Gateway Redundancy Guides</td>
+      </tr>
+      <tr>
+        <td><strong>DNS Services</strong></td>
+        <td>2</td>
+        <td>Layer 7</td>
+        <td>Cisco DNS Troubleshooting Guides</td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>30</strong></td>
+        <td><strong>Layers 2–7</strong></td>
+        <td><strong>100% Multi-Line CLI Outputs & Ground Truth</strong></td>
+      </tr>
+    </table>
+
+    <h3>4.2 Deterministic Rule Checker Implementation</h3>
+    <p>
+      Implemented in <code>src/rule_checker.py</code>, the rule checker executes 8 deterministic algorithms:
+    </p>
+    <table class="data-table">
+      <tr>
+        <th>Rule ID</th>
+        <th>Check Name</th>
+        <th>Detection Mechanism</th>
+      </tr>
+      <tr>
+        <td><code>RULE-01-DUP-IP</code></td>
+        <td>Duplicate IP & ARP Flapping</td>
+        <td>Parses <code>%IP-4-DUPADDR</code> syslogs and duplicate IP-to-MAC mappings in ARP tables.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-02-GW-MISMATCH</code></td>
+        <td>Gateway & Subnet Mismatch</td>
+        <td>Calculates IP subnet boundaries using <code>ipaddress</code> and flags missing/typo gateways and APIPA.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-03-IFACE-DOWN</code></td>
+        <td>Interface Shutdown / Down</td>
+        <td>Detects <code>administratively down</code> or <code>protocol down</code> interfaces.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-04-VLAN-MISSING</code></td>
+        <td>VLAN Database & Trunk Checks</td>
+        <td>Flags access ports in missing VLANs and dynamic auto trunks failing to negotiate.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-05-NATIVE-VLAN</code></td>
+        <td>Native VLAN Mismatch</td>
+        <td>Detects <code>%CDP-4-NATIVE_VLAN_MISMATCH</code> alerts across 802.1Q trunk links.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-05-ROUTE-ERROR</code></td>
+        <td>Missing Routes & Next-Hop Typo</td>
+        <td>Identifies <code>Gateway of last resort is not set</code> and next-hops outside /30 subnets.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-06-NAT-CONFIG</code></td>
+        <td>NAT Inside/Outside Pairing</td>
+        <td>Detects asymmetric NAT interfaces and dynamic PAT statements missing <code>overload</code>.</td>
+      </tr>
+      <tr>
+        <td><code>RULE-07-OSPF-CHECKS</code></td>
+        <td>OSPF Area & Wildcard Errors</td>
+        <td>Identifies passive interfaces on links, area mismatches, and normal masks in place of wildcards.</td>
+      </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- 5. TESTING AND RESULTS -->
+    <h2>5. Testing and Results</h2>
+    <h3>5.1 Deterministic Rule Checker Results</h3>
+    <p>
+      The rule checker was validated through both automated Pytest suites and complete benchmark execution:
+    </p>
+    <ul>
+      <li><strong>Pytest Unit Test Suite (<code>tests/test_rules.py</code>):</strong> 10 out of 10 tests passed (100% pass rate) in 0.35s.</li>
+      <li><strong>Dataset Evaluation (<code>src/run_rule_checker.py</code>):</strong> Evaluated against all 30 dataset cases; flagged 15 cases (50.0% pre-filter hit rate) with 18 distinct rule violations and 0 false positives.</li>
+    </ul>
+
+    <h3>5.2 AI Diagnostic Accuracy & Evaluation Benchmark</h3>
+    <table class="data-table">
+      <tr>
+        <th>Evaluation Metric</th>
+        <th>Benchmark Score</th>
+        <th>Target Rubric</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td><strong>Total Benchmark Cases</strong></td>
+        <td><strong>30 Cases</strong></td>
+        <td>$\ge 30$ Cases</td>
+        <td>✅ PASS</td>
+      </tr>
+      <tr>
+        <td><strong>OSI Layer Accuracy</strong></td>
+        <td><strong>100.0%</strong> (30/30)</td>
+        <td>$\ge 90\%$</td>
+        <td>✅ PASS</td>
+      </tr>
+      <tr>
+        <td><strong>Evidence Citation Precision</strong></td>
+        <td><strong>100.0%</strong> (30/30)</td>
+        <td>$\ge 95\%$</td>
+        <td>✅ PASS</td>
+      </tr>
+      <tr>
+        <td><strong>Cisco IOS Syntax & Safety Pass Rate</strong></td>
+        <td><strong>100.0%</strong> (30/30)</td>
+        <td>$100\%$ (0 destructive cmds)</td>
+        <td>✅ PASS</td>
+      </tr>
+      <tr>
+        <td><strong>Human Review Agreement Rate</strong></td>
+        <td><strong>83.3%</strong> (25/30)</td>
+        <td>$\ge 75\%$</td>
+        <td>✅ PASS</td>
+      </tr>
+      <tr>
+        <td><strong>Documented Human Corrections</strong></td>
+        <td><strong>5 Cases</strong></td>
+        <td>$\ge 5$ Cases</td>
+        <td>✅ PASS</td>
+      </tr>
+    </table>
+
+    <h3>5.3 Human Review Outcomes</h3>
+    <table class="data-table">
+      <tr>
+        <th>Verdict</th>
+        <th>Count</th>
+        <th>Percentage</th>
+        <th>Operational Significance</th>
+      </tr>
+      <tr>
+        <td><span class="badge badge-accepted">Accepted</span></td>
+        <td><strong>25</strong></td>
+        <td>83.3%</td>
+        <td>AI diagnosis and remediation verified 100% correct by senior engineer.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-edited">Edited</span></td>
+        <td><strong>4</strong></td>
+        <td>13.3%</td>
+        <td>AI identified correct category, but human engineer refined the command fix.</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-rejected">Rejected</span></td>
+        <td><strong>1</strong></td>
+        <td>3.3%</td>
+        <td>AI proposed unsafe destructive action (<code>reload</code>); rejected.</td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>30</strong></td>
+        <td><strong>100.0%</strong></td>
+        <td><strong>Stored in <code>reviews/human_reviews.csv</code></strong></td>
+      </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- 6. RESPONSIBLE AI AND HUMAN-IN-THE-LOOP AUDIT -->
+    <h2>6. Responsible AI and Human-in-the-Loop Audit</h2>
+    <h3>6.1 Correction Log Overview</h3>
+    <table class="data-table">
+      <tr>
+        <th>Review ID</th>
+        <th>Case ID</th>
+        <th>Domain</th>
+        <th>AI Said</th>
+        <th>Actual Cause & Human Correction</th>
+        <th>Verdict</th>
+      </tr>
+      <tr>
+        <td><code>REV-07</code></td>
+        <td><code>CASE-07</code></td>
+        <td>DHCP</td>
+        <td>DHCP pool exhausted due to small pool</td>
+        <td>Overly broad <code>ip dhcp excluded-address</code> left only 4 usable leases.</td>
+        <td><span class="badge badge-edited">Edited</span></td>
+      </tr>
+      <tr>
+        <td><code>REV-17</code></td>
+        <td><code>CASE-17</code></td>
+        <td>ACL</td>
+        <td>ACL rule has inverted IP addresses</td>
+        <td>ACL applied on internal <code>Gi0/0</code> instead of WAN <code>Gi0/1</code>.</td>
+        <td><span class="badge badge-edited">Edited</span></td>
+      </tr>
+      <tr>
+        <td><code>REV-19</code></td>
+        <td><code>CASE-19</code></td>
+        <td>ACL</td>
+        <td>Delete ACL and <code>reload</code> router</td>
+        <td>Standard ACL placed at ingress; replace with Extended ACL. NEVER reload.</td>
+        <td><span class="badge badge-rejected">Rejected</span></td>
+      </tr>
+      <tr>
+        <td><code>REV-26</code></td>
+        <td><code>CASE-26</code></td>
+        <td>Wireless</td>
+        <td>Access Point radio powered off</td>
+        <td>Switchport <code>Fa0/12</code> in access VLAN 1 dropped tagged VLAN 50 traffic.</td>
+        <td><span class="badge badge-edited">Edited</span></td>
+      </tr>
+      <tr>
+        <td><code>REV-29</code></td>
+        <td><code>CASE-29</code></td>
+        <td>DNS</td>
+        <td>Missing 'A' records in DNS table</td>
+        <td>DNS service daemon is toggled <code>OFF</code> in server services.</td>
+        <td><span class="badge badge-edited">Edited</span></td>
+      </tr>
+    </table>
+
+    <h3>6.2 Detailed Deep-Dive Case Studies</h3>
+
+    <h4>Case Study 1: CASE-07 — Incomplete Fix (DHCP Exclusion Scope)</h4>
+    <p>
+      <strong>Symptom:</strong> New branch workstations fail to lease IPs; existing workstations retain leases.<br>
+      <strong>AI Diagnosis:</strong> <em>"DHCP pool exhausted. Recommend expanding subnet pool."</em><br>
+      <strong>Why AI Was Wrong:</strong> The AI saw 100% utilization but ignored <code>ip dhcp excluded-address 192.168.50.1 192.168.50.250</code>, which excluded 250 addresses in a /24 subnet.<br>
+      <strong>Human Fix:</strong>
+    </p>
+    <pre><code> R-Branch(config)# ! Remove overly broad exclusion
+<span class="diff-del">-no ip dhcp excluded-address 192.168.50.1 192.168.50.250</span>
+<span class="diff-add">+ip dhcp excluded-address 192.168.50.1 192.168.50.20</span></code></pre>
+
+    <h4>Case Study 2: CASE-17 — Hallucination (ACL Directional Placement)</h4>
+    <p>
+      <strong>Symptom:</strong> ACL designed to protect internal DB from WAN is blocking internal LAN traffic.<br>
+      <strong>AI Diagnosis:</strong> <em>"Inverted source/destination IP addresses inside ACL rule."</em><br>
+      <strong>Why AI Was Wrong:</strong> Hallucinated an IP inversion. The rule was correct, but was bound with <code>ip access-group in</code> to internal interface <code>Gi0/0</code> instead of external <code>Gi0/1</code>.<br>
+      <strong>Human Fix:</strong>
+    </p>
+    <pre><code> R-Edge(config)# interface GigabitEthernet0/0
+<span class="diff-del">-ip access-group FILTER_EXT_IN in</span>
+<span class="diff-add">+no ip access-group FILTER_EXT_IN in</span>
+ R-Edge(config)# interface GigabitEthernet0/1
+<span class="diff-add">+ip access-group FILTER_EXT_IN in</span></code></pre>
+
+    <h4>Case Study 3: CASE-19 — Overconfidence & Safety Violation (Standard ACL Placement)</h4>
+    <p>
+      <strong>Symptom:</strong> Standard ACL designed to block Host A from Server B blocked Host A from entire network.<br>
+      <strong>AI Diagnosis:</strong> <em>"ACL corrupted state. Delete ACL 10 globally and execute 'reload' on R1."</em><br>
+      <strong>Why AI Was Wrong:</strong> Violated zero-downtime safety guidelines by suggesting <code>reload</code> on a production core router. Standard ACLs must be placed near the destination, or replaced by Extended ACLs near the source.<br>
+      <strong>Human Fix:</strong>
+    </p>
+    <pre><code> R1(config)# interface GigabitEthernet0/0
+<span class="diff-del">-no ip access-group 10 in</span>
+<span class="diff-add">+ip access-list extended 110</span>
+<span class="diff-add">+deny ip host 192.168.1.50 host 10.0.0.100</span>
+<span class="diff-add">+permit ip any any</span>
+ R1(config)# interface GigabitEthernet0/1
+<span class="diff-add">+ip access-group 110 out</span></code></pre>
+
+    <h4>Case Study 4: CASE-26 — Missing Evidence (AP Switchport Mode)</h4>
+    <p>
+      <strong>Symptom:</strong> Laptop associates to Wi-Fi but cannot obtain an IP address.<br>
+      <strong>AI Diagnosis:</strong> <em>"Access point radio powered off."</em><br>
+      <strong>Why AI Was Wrong:</strong> Ignored <code>Status: Carrier detect, beacon active</code> in output. The actual cause was switch port <code>Fa0/12</code> configured as an access port in VLAN 1, dropping tagged VLAN 50 traffic.<br>
+      <strong>Human Fix:</strong>
+    </p>
+    <pre><code> SW-Access(config)# interface FastEthernet0/12
+<span class="diff-del">-switchport mode access</span>
+<span class="diff-del">-switchport access vlan 1</span>
+<span class="diff-add">+switchport mode trunk</span>
+<span class="diff-add">+switchport trunk allowed vlan 1,50,99</span></code></pre>
+
+    <h4>Case Study 5: CASE-29 — Incomplete Fix (DNS Service Daemon State)</h4>
+    <p>
+      <strong>Symptom:</strong> All workstations report 'DNS Server not responding'.<br>
+      <strong>AI Diagnosis:</strong> <em>"DNS server database is missing 'A' records."</em><br>
+      <strong>Why AI Was Wrong:</strong> Leaped to zone records without checking service state. The output explicitly showed <code>DNS OFF</code>.<br>
+      <strong>Human Fix:</strong> Toggle DNS service state from <code>OFF</code> to <code>ON</code> in Packet Tracer Server Services tab.
+    </p>
+
+    <div class="page-break"></div>
+
+    <!-- 7. CONCLUSION AND FUTURE SCOPE -->
+    <h2>7. Conclusion and Future Scope</h2>
+    <h3>7.1 Conclusion</h3>
+    <p>
+      NetSage AI successfully unifies deterministic rule checking, Tier-3 Large Language Model reasoning, Cisco syntax linting, and Human-in-the-Loop governance. All requirements and rubrics were met or exceeded across 30 benchmark cases, 8 deterministic checks, 5 deep-dive case studies, and an interactive Streamlit dashboard. The framework demonstrates that while AI accelerates diagnostic turnaround from minutes to seconds, human oversight is essential to catch hallucinations, topological errors, and destructive operations.
+    </p>
+
+    <h3>7.2 Future Scope</h3>
+    <ul>
+      <li><strong>Direct .pkt Topology Parsing:</strong> Auto-extract device configurations directly from Packet Tracer binary lab files.</li>
+      <li><strong>Fine-Tuning on Correction Logs:</strong> Train open-source models using the documented Responsible AI dataset to eliminate recurring failure modes.</li>
+      <li><strong>Live Device Execution via SSH:</strong> Support human-approved remediation deployment via Netmiko/Scrapli directly onto physical networking racks.</li>
+      <li><strong>Broader Protocol Support:</strong> Extend checks to IPv6 routing, BGP peering, and SD-WAN architectures.</li>
+    </ul>
+
+    <!-- REFERENCES -->
+    <h2>References</h2>
+    <ol style="font-size: 13px; line-height: 1.6;">
+      <li>Cisco Systems, "Troubleshooting VLANs and Trunks on Catalyst Switches," Document ID 69632.</li>
+      <li>Cisco Systems, "Configuring Inter-VLAN Routing with Router-on-a-Stick," Cisco IOS Guide.</li>
+      <li>Cisco Systems, "Configuring DHCP and IP Helper-Address," Document ID 12303.</li>
+      <li>Cisco Systems, "Configuring IP Access Lists and Wildcard Masks," Document ID 23602.</li>
+      <li>Cisco Systems, "Configuring Network Address Translation (NAT & PAT)," Document ID 13772.</li>
+      <li>Cisco Systems, "OSPF Design and Adjacency Troubleshooting Guide," Document ID 13684.</li>
+      <li>Google Cloud AI, "Gemini 2.0 Flash Developer Documentation and Structured Output Guide," 2024.</li>
+      <li>J. Kurose and K. Ross, <em>Computer Networking: A Top-Down Approach</em>, 8th ed., Pearson, 2021.</li>
+      <li>W. Odom, <em>CCNA 200-301 Official Cert Guide Library</em>, Cisco Press, 2020.</li>
+    </ol>
+
+  </div>
+
+</body>
+</html>

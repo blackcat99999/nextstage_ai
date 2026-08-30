@@ -1,0 +1,31 @@
+! SW-Floor1 Running Configuration - 2960 Access Switch
+version 15.0
+no service password-encryption
+!
+hostname SW-Floor1
+!
+vlan 10
+ name Sales
+!
+vlan 20
+ name Guest
+!
+vlan 99
+ name Management
+!
+interface FastEthernet0/1
+ switchport mode access
+ switchport access vlan 1
+!
+interface FastEthernet0/5
+ switchport mode access
+ switchport access vlan 20
+!
+interface GigabitEthernet0/1
+ switchport mode dynamic auto
+!
+line con 0
+line vty 0 4
+ login
+!
+end

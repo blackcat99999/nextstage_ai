@@ -1,0 +1,97 @@
+[
+  {
+    "case_id": "EXAMPLE-01",
+    "domain": "VLAN",
+    "symptom": "PC1 in VLAN 10 cannot ping PC2 in VLAN 10 connected across an inter-switch trunk link.",
+    "topology_notes": "Switch SW1 connected to Switch SW2 via GigabitEthernet0/1. Host PC1 on SW1 (Fa0/1, VLAN 10). Host PC2 on SW2 (Fa0/1, VLAN 10).",
+    "show_outputs": "SW1# show interfaces GigabitEthernet0/1 switchport\nName: Gi0/1\nAdministrative Mode: dynamic auto\nOperational Mode: static access\nAccess Mode VLAN: 1 (default)\n\nSW1# show interfaces trunk\n(No active trunk interfaces listed)",
+    "rule_findings": [
+      "RULE-04-TRUNK-NOT-OPERATIONAL: Trunk Link Inactive / Static Access Mode on Gi0/1"
+    ],
+    "expected_response": {
+      "case_id": "EXAMPLE-01",
+      "root_cause": "Uplink interface GigabitEthernet0/1 is operating in static access mode on VLAN 1 instead of an 802.1Q trunk, dropping tagged VLAN 10 frames.",
+      "osi_layer": "Layer 2",
+      "confidence": "High",
+      "evidence": [
+        "Operational Mode: static access",
+        "Access Mode VLAN: 1 (default)",
+        "(No active trunk interfaces listed)"
+      ],
+      "next_commands": [
+        "show interfaces GigabitEthernet0/1 trunk",
+        "show interfaces GigabitEthernet0/1 switchport"
+      ],
+      "recommended_fix": [
+        "configure terminal",
+        "interface GigabitEthernet0/1",
+        "switchport mode trunk",
+        "switchport trunk allowed vlan 10,20,99",
+        "no shutdown",
+        "end"
+      ],
+      "explanation": "Because DTP did not negotiate trunking, Gi0/1 defaulted to an access port in VLAN 1. VLAN 10 broadcast and unicast packets cannot traverse the uplink until trunk mode is explicitly enabled."
+    }
+  },
+  {
+    "case_id": "EXAMPLE-02",
+    "domain": "Routing",
+    "symptom": "Branch PC (192.168.50.10) cannot reach Headquarter Server (10.0.0.100). Ping drops with request timed out.",
+    "topology_notes": "Branch Router R-Branch connected to HQ-Core via Serial0/0/0 (172.16.0.0/30). R-Branch has default route. HQ-Core routing table is missing 192.168.50.0/24.",
+    "show_outputs": "HQ-Core# show ip route 192.168.50.0\n% Subnet not in table\n\nHQ-Core# show ip route\nGateway of last resort is not set\nC 10.0.0.0/24 is directly connected, GigabitEthernet0/0\nC 172.16.0.0/30 is directly connected, Serial0/0/0",
+    "rule_findings": [
+      "RULE-05-MISSING-ROUTE: Gateway of last resort is not set / % Subnet not in table"
+    ],
+    "expected_response": {
+      "case_id": "EXAMPLE-02",
+      "root_cause": "HQ-Core router lacks a return route for Branch subnet 192.168.50.0/24 and has no gateway of last resort, resulting in asymmetric packet drop on reply.",
+      "osi_layer": "Layer 3",
+      "confidence": "High",
+      "evidence": [
+        "% Subnet not in table",
+        "Gateway of last resort is not set"
+      ],
+      "next_commands": [
+        "show ip route static",
+        "traceroute 192.168.50.10"
+      ],
+      "recommended_fix": [
+        "configure terminal",
+        "ip route 192.168.50.0 255.255.255.0 172.16.0.2",
+        "end",
+        "copy running-config startup-config"
+      ],
+      "explanation": "Packets from the branch reach HQ Server, but HQ-Core cannot route return traffic because 192.168.50.0/24 is missing from its routing table. Adding the static route via Serial next-hop 172.16.0.2 completes bidirectional reachability."
+    }
+  },
+  {
+    "case_id": "EXAMPLE-03",
+    "domain": "ACL",
+    "symptom": "Clients in LAN (192.168.1.0/24) can ping Web Server (172.16.1.50) but web browser connection to port 80 fails immediately.",
+    "topology_notes": "Router R1 filtering traffic between LAN (Gi0/0) and Web Farm (Gi0/1). Access-list 102 applied outbound on Gi0/1.",
+    "show_outputs": "R1# show access-lists 102\nExtended IP access list 102\n 10 permit icmp 192.168.1.0 0.0.0.255 host 172.16.1.50 (40 matches)\n (Implicit deny ip any any active at end)\n\nR1# show running-config interface GigabitEthernet0/1\ninterface GigabitEthernet0/1\n ip address 172.16.1.1 255.255.255.0\n ip access-group 102 out",
+    "rule_findings": [],
+    "expected_response": {
+      "case_id": "EXAMPLE-03",
+      "root_cause": "Extended ACL 102 permits only ICMP echo traffic; HTTP (TCP port 80) is dropped by the default implicit 'deny ip any any' rule.",
+      "osi_layer": "Layer 4",
+      "confidence": "High",
+      "evidence": [
+        "10 permit icmp 192.168.1.0 0.0.0.255 host 172.16.1.50 (40 matches)",
+        "(Implicit deny ip any any active at end)"
+      ],
+      "next_commands": [
+        "show access-lists 102",
+        "show ip interface GigabitEthernet0/1"
+      ],
+      "recommended_fix": [
+        "configure terminal",
+        "ip access-list extended 102",
+        "20 permit tcp 192.168.1.0 0.0.0.255 host 172.16.1.50 eq 80",
+        "30 permit tcp 192.168.1.0 0.0.0.255 host 172.16.1.50 eq 443",
+        "end"
+      ],
+      "explanation": "Cisco extended access lists end with an unwritten implicit deny rule. Because ACL 102 only explicitly permits ICMP, TCP SYN packets destined for port 80/443 match the implicit deny and are discarded."
+    }
+  }
+]

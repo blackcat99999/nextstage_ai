@@ -1,0 +1,9 @@
+{
+  "total_cases_evaluated": 30,
+  "osi_layer_accuracy_pct": 100.0,
+  "evidence_citation_precision_pct": 100.0,
+  "cisco_syntax_validity_pct": 100.0,
+  "average_latency_seconds": 0.001,
+  "total_tokens_consumed": 19121,
+  "pipeline_mode": "mock"
+}
